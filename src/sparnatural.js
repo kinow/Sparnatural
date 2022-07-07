@@ -33,6 +33,20 @@ require('tippy.js/dist/tippy.css');
 
 const Sortable = require('sortablejs/modular/sortable.core.esm.js').Sortable;
 
+const Shepherd = require('shepherd.js/dist/js/shepherd.js');
+require('shepherd.js/dist/css/shepherd.css');
+
+const tour = new Shepherd.Tour({
+	useModalOverlay: true,
+	defaultStepOptions: {
+		classes: 'shadow-md bg-purple-dark',
+		scrollTo: false,
+		popperOptions: {
+			modifiers: [{ name: 'offset', options: { offset: [20, 20] } }]
+	  	}
+	}
+  });
+
 JsonLdSpecificationProvider = require("./JsonLdSpecificationProvider.js").JsonLdSpecificationProvider;
 SpecificationProviderFactory = require("./SpecificationProviderFactory.js").SpecificationProviderFactory;
 RDFSpecificationProvider = require("./RDFSpecificationProvider.js").RDFSpecificationProvider ;
@@ -251,6 +265,7 @@ UiuxConfig = require("./UiuxConfig.js");
 			 * ! Need to not to be a function if disable
 			 **/
 			onSubmit : null ,
+			
 		};
 
 		var VALUE_SELECTION_WIDGETS = [
@@ -292,6 +307,8 @@ UiuxConfig = require("./UiuxConfig.js");
 			$(thisForm.sparnatural).find('.StartClassGroup .nice-select:not(.disabled)').trigger('click') ;
 			// uncomment to trigger gathering of statistics
 			// initStatistics(specProvider);
+			initTour(thisForm) ;
+
 		});
 		
 		this.loadQuery = function(json) {
@@ -324,6 +341,149 @@ UiuxConfig = require("./UiuxConfig.js");
 		this.disableLoading = function() {
 			$(thisForm.sparnatural).find('.submitSection a').removeClass('loadingEnabled') ;
 		}	
+
+		function initTour(form) {
+
+			tour.addStep({
+				id: 'step-home',
+				text: 'Bienvenu dans le tutorial de Sparnatural',
+				classes: 'example-step-extra-class',
+				buttons: [
+					{
+						text: 'Non, merci',
+						action: tour.cancel
+					},
+					{
+						text: 'Suivre le tutoriel',
+						action: tour.next
+					}
+				]
+			});
+			tour.addStep({
+				id: 'step-0',
+				text: 'L\'élément ci-dessus permet de rédiger votre premier critère de recherche',
+				attachTo: {
+				element: '#CriteriaGroup-0',
+				on: 'bottom'
+				},
+				classes: 'example-step-extra-class',
+				buttons: [
+				{
+					text: 'Next',
+					action: tour.next
+				}
+				]
+			});
+			tour.addStep({
+				id: 'step--1',
+				text: 'La première étape est de choisir le type d\'objet que vous cherchez dans cette liste',
+				attachTo: {
+				element: '#CriteriaGroup-0>.StartClassGroup ul.list',
+				on: 'right'
+				},
+				classes: 'example-step-extra-class',
+				buttons: [
+				{
+					text: 'Next',
+					action: tour.next
+				}
+				]
+			});
+			var StepToWait = tour.addStep({
+				id: 'step--2',
+				text: 'Imaginions que vous cherchiez un Pays. Cliquez alor sur cet élément.',
+				attachTo: {
+				element: 'li[data-value="http://dbpedia.org/ontology/Country"]',
+				on: 'right'
+				},/*
+				advanceOn: {
+				selector: 'li[data-value="http://dbpedia.org/ontology/Country"]',
+				event: 'click'
+				},*/
+				classes: 'example-step-extra-class',
+				/*buttons: [
+				{
+					text: 'Next',
+					action: tour.next
+				}
+				]*/
+			});
+
+			tour.addStep({
+				id: 'step--3',
+				text: 'La seconde étape est de choisir le type d\'objet auquel le pays doit être relié dans cette liste',
+				attachTo: {
+				element: '#CriteriaGroup-0>.EndClassGroup ul.list',
+				on: 'bottom'
+				},
+				classes: 'example-step-extra-class',
+				buttons: [
+				{
+					text: 'Next',
+					action: tour.next
+				}
+				]
+			});
+
+			var StepToWait2 = tour.addStep({
+				id: 'step--4',
+				text: 'Imaginions que vous cherchiez un Pays relié à une personne. Cliquez alor sur cet élément',
+				attachTo: {
+					element: '.EndClassGroup li[data-value="http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person"]',
+					on: 'right'
+				},
+				advanceOn: {
+				selector: '.EndClassGroup li[data-value="http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person"]',
+				event: 'click'
+				},
+				classes: 'example-step-extra-class',
+				/*buttons: [
+				{
+					text: 'Next',
+					action: tour.next
+				}
+				]*/
+			});
+
+
+			tour.addStep({
+				id: 'step-5',
+				text: 'La troisième étape est de choisir le type de relation entr le pays et la personne dans cette liste.',
+				attachTo: {
+				element: '#CriteriaGroup-0>.ObjectPropertyGroup ul.list',
+				on: 'bottom'
+				},
+				classes: 'example-step-extra-class',
+				buttons: [
+				{
+					text: 'Next...',
+					action: tour.next
+				}
+				],
+				beforeShowPromise: function() {
+					return new Promise(function(resolve) {
+					  setTimeout( function () {
+						resolve();
+					  }, 300);
+					});
+				}
+			});
+
+			
+			$(form.sparnatural).on('submit', () => {
+				console.log('submit') ;
+				if (StepToWait.isOpen()){
+					console.log('submit') ;
+				  Shepherd.activeTour.next();
+				}
+				if (StepToWait2.isOpen()){
+					console.log('submit') ;
+				  Shepherd.activeTour.next();
+				}
+			});
+
+			tour.start();
+		}
 
 		function doLoadQuery(form, json) {
 			// stores the JSON to be preloaded
@@ -467,8 +627,11 @@ UiuxConfig = require("./UiuxConfig.js");
 					}
 				}
 			}) ;
+			
 
 			$(form.sparnatural).trigger({type: 'formInitialized'}) ;
+			console.log(form) ;
+			//form.sparnatural.initTour() ;
 		}
 
 		function initVariablesSelector(form) {

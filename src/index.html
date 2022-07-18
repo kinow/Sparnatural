@@ -560,6 +560,218 @@ WHERE {
 ;
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@8.3.1/dist/js/shepherd.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@8.3.1/dist/css/shepherd.css"/>
+
+
+    <script>
+      function waitComponent() {
+        return new Promise(function(resolve) {
+          setTimeout( function () {
+          resolve();
+          }, 300);
+        });
+      }
+
+      var tour;
+      var StepToWait3;
+
+      function initTour(form) {
+        tour = new Shepherd.Tour({
+          useModalOverlay: true,
+          defaultStepOptions: {
+            classes: 'shadow-md bg-purple-dark',
+            scrollTo: false,
+            popperOptions: {
+              modifiers: [{ name: 'offset', options: { offset: [20, 20] } }]
+              }
+          }
+        });
+        tour.addStep({
+          id: 'step-home',
+          text: 'Bienvenu dans le tutorial de Sparnatural',
+          classes: 'example-step-extra-class',
+          buttons: [
+            {
+              text: 'Non, merci',
+              action: tour.cancel
+            },
+            {
+              text: 'Suivre le tutoriel',
+              action: tour.next
+            }
+          ]
+        });
+        tour.addStep({
+          id: 'step-0',
+          text: 'L\'élément ci-dessus permet de rédiger votre premier critère de recherche',
+          attachTo: {
+            element: '#CriteriaGroup-0',
+            on: 'bottom'
+          },
+          canClickTarget: false,
+          classes: 'example-step-extra-class',
+          buttons: [
+            {
+            text: 'Next',
+            action: tour.next
+            }
+          ]
+        });
+        tour.addStep({
+          id: 'step--1',
+          text: 'La première étape est de choisir le type d\'objet que vous recherchez dans cette liste',
+          attachTo: {
+            element: '#CriteriaGroup-0>.StartClassGroup ul.list',
+            on: 'right'
+          },
+          classes: 'example-step-extra-class',
+          canClickTarget: false,
+          buttons: [
+            {
+            text: 'Next',
+            action: tour.next
+            }
+          ]
+        });
+        tour.addStep({
+          id: 'step--2',
+          text: 'Imaginions que vous recherchiez des personnes. Cliquez alor sur cet élément.',
+          attachTo: {
+            element: 'li[data-value="http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person"]',
+            on: 'right'
+          },
+          advanceOn: {
+            selector: '.StartClassGroup li[data-value="http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person"]',
+            event: 'click'
+          },
+          classes: 'example-step-extra-class',
+        });
+
+        tour.addStep({
+          id: 'step--3',
+          text: 'La seconde étape est de choisir le type d\'objet auquel les personnes doiventt être reliées dans cette liste',
+          attachTo: {
+            element: '#CriteriaGroup-0>.EndClassGroup ul.list',
+            on: 'right'
+          },
+          classes: 'example-step-extra-class',
+          canClickTarget: false,
+          buttons: [
+            {
+            text: 'Next',
+            action: tour.next
+            }
+          ],
+          beforeShowPromise: function() {
+            return waitComponent() ;
+          }
+        });
+
+        tour.addStep({
+          id: 'step--4',
+          text: 'Imaginions que vous recherchiez des personnes reliées à un pays. Cliquez alor sur cet élément',
+          attachTo: {
+            element: '.EndClassGroup li[data-value="http://dbpedia.org/ontology/Country"]',
+            on: 'right'
+          },
+          advanceOn: {
+            selector: '.EndClassGroup li[data-value="http://dbpedia.org/ontology/Country"]',
+            event: 'click'
+          },
+          classes: 'example-step-extra-class',
+        });
+
+
+        tour.addStep({
+          id: 'step--5',
+          text: 'La troisième étape est de choisir le type de relation entre les personnes et les pays dans cette liste.',
+          attachTo: {
+            element: '#CriteriaGroup-0>.ObjectPropertyGroup ul.list',
+            on: 'bottom'
+          },
+          classes: 'example-step-extra-class',
+          canClickTarget: false,
+          buttons: [
+            {
+            text: 'Next...',
+            action: tour.next
+            }
+          ],
+          beforeShowPromise: function() {
+            return waitComponent() ;
+          }
+        });
+
+        tour.addStep({
+          id: 'step--6',
+          text: 'Imaginions que votre recheche concernent des personnes originaires d\'un pays. Cliquez alor sur cet élément.',
+          attachTo: {
+            element: '.ObjectPropertyGroup li[data-value="http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#bornIn"]',
+            on: 'right'
+          },
+          advanceOn: {
+            selector: '.ObjectPropertyGroup li[data-value="http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#bornIn"]',
+            event: 'click'
+          },
+          classes: 'example-step-extra-class',
+        });
+
+        tour.addStep({
+          id: 'step--7',
+          text: 'Vous pouvez ensuite afiner votre recheche en précisant le pays d\'origine.',
+          attachTo: {
+            element: '#CriteriaGroup-0>.EndClassGroup>.EditComponents>.ObjectPropertyTypeWidget',
+            on: 'left'
+          },
+          classes: 'example-step-extra-class',
+          canClickTarget: false,
+          buttons: [
+            {
+            text: 'Next',
+            action: tour.next
+            }
+          ],
+          beforeShowPromise: function() {
+            return waitComponent() ;
+          }
+        });
+
+        StepToWait3 = tour.addStep({
+          id: 'step--8',
+          text: 'Dans la liste déroulante ci-dessous, selectionnez un pays',
+          attachTo: {
+            element: '#CriteriaGroup-0>.EndClassGroup>.EditComponents>.ObjectPropertyTypeWidget .list-widget',
+            on: 'left'
+          },
+          classes: 'example-step-extra-class',
+          canClickTarget: true,
+          beforeShowPromise: function() {
+            return waitComponent() ;
+          }
+        });
+
+        tour.addStep({
+          id: 'step--9',
+          text: 'Dérnière étape, pour afficher la liste des résultats cliquez sur ce bouton',
+          attachTo: {
+            element: '.submitSection a',
+            on: 'left'
+          },
+          classes: 'example-step-extra-class',
+          advanceOn: {
+            selector: '.submitSection a',
+            event: 'click'
+          },
+          beforeShowPromise: function() {
+            return waitComponent() ;
+          }
+        });
+
+        tour.start();
+        return form ;
+      }
+    </script>
 
     <script>
       $.urlParam = function(name){
@@ -570,7 +782,7 @@ WHERE {
       var lang = ($.urlParam('lang') != null)?$.urlParam('lang'):'fr';
 
       var sparnatural;
-      $( document ).ready(function($) {          
+      $( document ).ready(function($) {
 
         sparnatural = document.getElementById('ui-search').Sparnatural({
           config: config,
@@ -597,6 +809,11 @@ WHERE {
             $('#sparql code').html(queryString.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
             yasqe.setValue(queryString);
             // yasqe.query();
+
+            // When click on select2 for Sheperd tour
+            if (StepToWait3.isOpen()){
+              Shepherd.activeTour.next();
+            }
           },
           tooltipConfig : {
             delay: [800, 100],
@@ -608,9 +825,15 @@ WHERE {
             form.sparnatural.enableLoading() ; 
             // trigger the query from YasQE
             yasqe.query();
+          },
+          readyToInteract: function(form) {
+            initTour(form) ;
+            return form ;
           }
         });
       }) ;
+
+
 
       prefixesPostProcess = function(queryString, queryJson) {
         if(queryString.indexOf("rdf-schema#") == -1) {

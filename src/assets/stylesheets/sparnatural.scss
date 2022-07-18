@@ -497,6 +497,9 @@ body {
 				display: none;
 			}
 		}
+		.nice-select.open .current {
+			display: none;
+		}
 		
 
 
@@ -1965,6 +1968,7 @@ body {
 body .select2-container--default {
 	font-size: 14px;
 	line-height: 1.2;
+	z-index: 9999;
 	.select2-results__option--highlighted.select2-results__option--highlighted {
 		background-color: $custom-red;
 	}
